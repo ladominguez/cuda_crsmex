@@ -19,38 +19,39 @@ main(int argc, char **argv)
   /* Define variables to be used in the call to rsac1() */
   float   yarray[MAX], beg, del;
   int     nlen, nerr, max = MAX;
-  float   *data;
+  float   *data[NSAC];
   char    kname[ N_FILENAME ] ;
   FILE    *fid;
   size_t  len=0;
   ssize_t read;
+  int     count=0;
 
   char  *line;
   size_t line_size = 100;
 
   line = (char  *)malloc(line_size    * sizeof(char));
-  data = (float *)malloc( MAX  * NSAC * sizeof(float));  
+
+  for (int i=0; i<NSAC; i++)
+  	data[i] = (float *)malloc( MAX  * sizeof(float));  
 
   fid = fopen("filenames.dat","r"); 
   while ((read = getline(&line, &len, fid)) != -1)
   {
-        printf("Retrieve line of lenght %zu:\n", read);
-        printf("%s", line);
 	line = strstrip(line);
         strcpy ( kname ,line ) ;
-        printf("%s", kname);
-	fprintf(stderr,"strlen(kname) = %lu\n",strlen( kname ));
         rsac1( kname, yarray, &nlen, &beg, &del, &max, &nerr, strlen( kname ) ) ;
-        printf("numel %d\n",nlen);
         if ( nerr != 0 ) {
                 fprintf(stderr, "Error reading in SAC file: %s\n", kname);
                 exit ( nerr ) ;
         }
 	else {
-    		fprintf(stderr,"Reading SUCCESS: %s\n\n",kname);
+    		fprintf(stderr,"Reading SUCCESS: %s\n",kname);
+        	fprintf(stderr,"Number of samples read: %d\n\n",nlen);
 	}
+	memcpy(data[count],yarray,nlen*sizeof(float));
+	count++;
   }
-free(data);
+free(*data);
 fclose(fid);
 if (line)
         free(line);
