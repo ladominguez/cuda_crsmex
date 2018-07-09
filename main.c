@@ -5,22 +5,26 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <sacio.h>
+#include <unistd.h>
 
 /* Define the maximum length of the data array */
 #define MAX 100000
 #define NSAC 100
 #define N_FILENAME 100
+#define PATH_MAX 100
 
-char *strstrip(char *s);
+char *strstrip(char *s); // Deletes trailing characters when reading filenames. Similar to .rtrip() in Python.
+void usage();            // Show usage
 
 int
 main(int argc, char **argv)
 {
   /* Define variables to be used in the call to rsac1() */
   float   yarray[MAX], beg, del;
-  int     nlen, nerr, max = MAX;
+  int     nlen, nerr, max = MAX, opt = 0;
   float   *data[NSAC];
   char    kname[ N_FILENAME ] ;
+  char    infilename[ N_FILENAME ] ;
   FILE    *fid;
   size_t  len=0;
   ssize_t read;
@@ -29,12 +33,27 @@ main(int argc, char **argv)
   char  *line;
   size_t line_size = 100;
 
+  if( argc == 1 ) {
+	usage();
+	exit(-1);
+  } 
+  while((opt = getopt(argc, argv, "f:")) != -1){
+	switch(opt){
+	      case 'f':
+		strncpy(infilename, optarg, PATH_MAX);
+		break;
+	default:
+		fprintf(stderr, "Unknown option %c\n\n",opt);
+		usage();
+		exit(-1);
+        }
+  }
   line = (char  *)malloc(line_size    * sizeof(char));
 
   for (int i=0; i<NSAC; i++)
   	data[i] = (float *)malloc( MAX  * sizeof(float));  
 
-  fid = fopen("filenames.dat","r"); 
+  fid = fopen(infilename,"r"); 
   while ((read = getline(&line, &len, fid)) != -1)
   {
 	line = strstrip(line);
@@ -81,3 +100,13 @@ char *strstrip(char *s)
 
         return s;
 }
+
+void usage(){
+fprintf(stderr,"\nCUDA CRSMEX   -  Characteristic Repeating Earthquakes Code \n\n");
+fprintf(stderr," This program looks for characteristic repeating earthquakes using GPU/CUDA\n");
+fprintf(stderr," Required options:\n");
+fprintf(stderr,"                 -f  filenames.dat - filenames.dat must containt a list of all files to be analyzed.\n\n");
+fprintf(stderr,"        Author: Luis A. Dominguez - ladominguez@ucla.edu\n\n");
+
+}
+
