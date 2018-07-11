@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include <sacio.h>
 #include <unistd.h>
+#include <sac.h>
 
 /* Define the maximum length of the data array */
 #define MAX 100000
@@ -15,12 +16,13 @@
 
 char *strstrip(char *s); // Deletes trailing characters when reading filenames. Similar to .rtrip() in Python.
 void usage();            // Show usage
-
+void print_array(float **array, int M, int N);
 int
 main(int argc, char **argv)
 {
   /* Define variables to be used in the call to rsac1() */
-  float   yarray[MAX], beg, del;
+  float   yarray[MAX];
+  float   beg, del;
   int     nlen, nerr, max = MAX, opt = 0;
   float   *data[NSAC];
   char    kname[ N_FILENAME ] ;
@@ -33,6 +35,12 @@ main(int argc, char **argv)
   char  *line;
   size_t line_size = 100;
 
+  /* Define variables for filtering */
+ 
+  double low = 1.0, high = 100.0;
+  double attenuation = 0.0, transition_bandwidth = 0.0; // Only used for Chevichev filters
+  int passes = 2, npoles = 4; 
+  
   if( argc == 1 ) {
 	usage();
 	exit(-1);
@@ -67,9 +75,50 @@ main(int argc, char **argv)
     		fprintf(stderr,"Reading SUCCESS: %s\n",kname);
         	fprintf(stderr,"Number of samples read: %d\n\n",nlen);
 	}
+         /* START - FILTERING */
+    /*     Call xapiir ( Apply a IIR Filter ) 
+     *        - yarray - Original Data 
+     *        - nlen   - Number of points in yarray 
+     *        - proto  - Prototype of Filter 
+     *                 - SAC_FILTER_BUTTERWORK        - Butterworth 
+     *                 - SAC_FILTER_BESSEL            - Bessel 
+     *                 - SAC_FILTER_CHEBYSHEV_TYPE_I  - Chebyshev Type I 
+     *                 - SAC_FILTER_CHEBYSHEV_TYPE_II - Chebyshev Type II 
+     *        - transition_bandwidth (Only for Chebyshev Filter) 
+     *                 - Bandwidth as a fraction of the lowpass prototype 
+     *                   cutoff frequency 
+     *        - attenuation (Only for Chebyshev Filter) 
+     *                 - Attenuation factor, equals amplitude reached at 
+     *                   stopband egde 
+     *        - order  - Number of poles or order of the analog prototype 
+     *                   4 - 5 should be ample 
+     *                   Cannot exceed 10 
+     *        - type   - Type of Filter 
+     *                 - SAC_FILTER_BANDPASS 
+     *                 - SAC_FILTER_BANDREJECT 
+     *                 - SAC_FILTER_LOWPASS 
+     *                 - SAC_FILTER_HIGHPASS 
+     *        - low    - Low Frequency Cutoff [ Hertz ] 
+     *                   Ignored on SAC_FILTER_LOWPASS 
+     *        - high   - High Frequency Cutoff [ Hertz ] 
+     *                   Ignored on SAC_FILTER_HIGHPASS 
+     *        - delta  - Sampling Interval [ seconds ] 
+     *        - passes - Number of passes 
+     *                 - 1 Forward filter only 
+     *                 - 2 Forward and reverse (i.e. zero-phase) filtering 
+     */
+    xapiir(yarray, nlen, SAC_BUTTERWORTH, 
+           transition_bandwidth, attenuation, 
+           npoles, 
+           SAC_HIGHPASS, 
+           low, high, 
+           del, passes);
+       /* END */
 	memcpy(data[count],yarray,nlen*sizeof(float));
 	count++;
   }
+
+print_array(data,count,nlen);
 free(*data);
 fclose(fid);
 if (line)
@@ -108,5 +157,21 @@ fprintf(stderr," Required options:\n");
 fprintf(stderr,"                 -f  filenames.dat - filenames.dat must containt a list of all files to be analyzed.\n\n");
 fprintf(stderr,"        Author: Luis A. Dominguez - ladominguez@ucla.edu\n\n");
 
+}
+
+void print_array(float **array, int M, int N)
+{
+FILE *fout;
+fprintf(stdout,"M = %d\n",M);
+fprintf(stdout,"N = %d\n",N);
+
+fout = fopen("data.dat","w");
+	for (int i = 0; i < M; i++){
+		for (int j = 0; j < N; j++)
+			fprintf(fout,"%8.3f ",array[i][j]);
+		fprintf(fout,"\n");
+	}
+fprintf(stdout, "Writing fie data.dat\n");
+fclose(fout);
 }
 
