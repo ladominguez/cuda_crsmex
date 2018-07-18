@@ -7,6 +7,7 @@
 #include <sacio.h>
 #include <unistd.h>
 #include <sac.h>
+#include "crsmex.h"
 
 /* Define the maximum length of the data array */
 #define MAX 100000
@@ -17,6 +18,8 @@
 char *strstrip(char *s); // Deletes trailing characters when reading filenames. Similar to .rtrip() in Python.
 void usage();            // Show usage
 void print_array(float **array, int M, int N);
+const char CONFIG_FILENAME[]="config.conf";
+
 int
 main(int argc, char **argv)
 {
@@ -40,7 +43,14 @@ main(int argc, char **argv)
   double low = 1.0, high = 100.0;
   double attenuation = 0.0, transition_bandwidth = 0.0; // Only used for Chevichev filters
   int passes = 2, npoles = 4; 
-  
+ 
+  struct config_filter configstruct;
+  configstruct = get_config(CONFIG_FILENAME); 
+
+  //printf("Low(int)  = %f\n",configstruct.low);
+  //printf("High(int)  = %f\n",configstruct.high);
+  //printf("Attenuation(int)  = %f\n",configstruct.attenuation);
+ 
   if( argc == 1 ) {
 	usage();
 	exit(-1);
