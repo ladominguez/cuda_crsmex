@@ -43,16 +43,19 @@ main(int argc, char **argv)
 
   /* Define variables for filtering */
  
-  double low = 1.0, high = 100.0;
-  double attenuation = 0.0, transition_bandwidth = 0.0; // Only used for Chevichev filters
-  int passes = 2, npoles = 4; 
+  //double low = 1.0, high = 100.0;
+  //double attenuation = 0.0, transition_bandwidth = 0.0; // Only used for Chevichev filters
+  //int passes = 2, npoles = 4; 
  
   struct config_filter configstruct;
   configstruct = get_config(CONFIG_FILENAME); 
 
-  //printf("Low(int)  = %f\n",configstruct.low);
-  //printf("High(int)  = %f\n",configstruct.high);
-  //printf("Attenuation(int)  = %f\n",configstruct.attenuation);
+  printf("Low(int)  = %f\n",configstruct.low);
+  printf("High(int)  = %f\n",configstruct.high);
+  printf("Attenuation(int)  = %f\n",configstruct.attenuation);
+  printf("Transition Band(int)  = %f\n",configstruct.transition_band);
+  printf("Npoles  = %d\n",configstruct.npoles);
+  printf("passes  = %d\n",configstruct.passes);
  
   if( argc == 1 ) {
 	usage();
@@ -121,11 +124,11 @@ main(int argc, char **argv)
      *                 - 2 Forward and reverse (i.e. zero-phase) filtering 
      */
     xapiir(yarray, nlen, (char *)SAC_BUTTERWORTH, 
-           transition_bandwidth, configstruct.attenuation, 
-           npoles, 
+           configstruct.transition_band, configstruct.attenuation, 
+           configstruct.npoles, 
            (char *)SAC_HIGHPASS, 
            configstruct.low, configstruct.high, 
-           del, passes);
+           del, configstruct.passes);
        /* END */
 	memcpy(data[count],yarray,nlen*sizeof(float));
 	count++;
