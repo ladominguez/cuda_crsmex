@@ -2,8 +2,8 @@ CUDA_INSTALL_PATH := /usr/local/cuda
 
 CXX := g++
 CC := gcc
-LINK := g++ -fPIC
-NVCC  := nvcc
+LINK := nvcc -arch=sm_30
+NVCC  := nvcc -arch=sm_30
 
 # Includes
 INCLUDES = -I. -I$(CUDA_INSTALL_PATH)/include -I/usr/local/sac/include
@@ -16,7 +16,7 @@ CXXFLAGS += $(COMMONFLAGS)
 CFLAGS += $(COMMONFLAGS)
 #LIB_SAC := `sac-config --cflags --libs sac`
 LIB_SAC  := -L/usr/local/sac/lib  -lsacio -lsac -lm 
-OBJS = main.cpp.o crsmex.cpp.o
+OBJS = crsmex.cpp.o main.cu.o
 TARGET = exec
 LINKLINE = $(LINK) -o $(TARGET) $(OBJS) $(LIB_SAC)
 
@@ -27,6 +27,9 @@ LINKLINE = $(LINK) -o $(TARGET) $(OBJS) $(LIB_SAC)
 
 %.c.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
+
+%.cu.o: %.cu
+	$(NVCC) $(NVCCFLAGS) -c $< -o $@
 
 $(TARGET): $(OBJS) Makefile
 	$(LINKLINE)
