@@ -1,13 +1,14 @@
 CUDA_INSTALL_PATH := /usr/local/cuda
+SAC_INSTALL_PATH := /usr/local/sac
 
+ARCH := -arch=sm_30
 CXX := g++
 CC := gcc
-LINK := nvcc -arch=sm_30
-NVCC  := nvcc -arch=sm_30
+LINK := nvcc $(ARCH)
+NVCC  := nvcc $(ARCH)
 
 # Includes
-INCLUDES = -I. -I$(CUDA_INSTALL_PATH)/include -I/usr/local/sac/include
-#INCLUDES = -I. -I$(CUDA_INSTALL_PATH)/include 
+INCLUDES = -I. -I$(CUDA_INSTALL_PATH)/include -I$(SAC_INSTALL_PATH)/include
 
 # Common flags
 COMMONFLAGS += $(INCLUDES)

@@ -19,10 +19,15 @@ extern "C"{
 #define N_FILENAME 100
 #define MAX_PATH 100
 
+#define GRID_SIZE  1
+#define BLOCK_SIZE 4
+
 char *strstrip(char *s); // Deletes trailing characters when reading filenames. Similar to .rtrip() in Python.
 void usage();            // Show usage
 void print_array(float **array, int M, int N);
 const char CONFIG_FILENAME[]="config.conf";
+
+__device__ void initDeviceVectors(int *vecA, int lL);
 
 int
 main(int argc, char **argv)
@@ -32,26 +37,37 @@ main(int argc, char **argv)
   float   beg, del;
   int     nlen, nerr, max = MAX, opt = 0;
   float   *data[NSAC];
+  float   *device_data;
   char    kname[ N_FILENAME ] ;
   char    infilename[ N_FILENAME ] ;
   FILE    *fid;
   size_t  len=0;
-//  ssize_t read;
   int     count=0;
 
   char  *line;
   size_t line_size = 100;
 
+  /* Filtering variables */
   struct config_filter configstruct;
   configstruct = get_config(CONFIG_FILENAME); 
 
+  /* CUDA configuration */
+
+  int grdSize   = GRID_SIZE;
+  int blockSize = BLOCK_SIZE;
+
+  dim3 dimGrid(grdSize, grdSize, grdSize);
+  dim3 dimBlock(blockSize, blockSize, blockSize);
+
+ /*
   printf("Low(int)  = %f\n",configstruct.low);
   printf("High(int)  = %f\n",configstruct.high);
   printf("Attenuation(int)  = %f\n",configstruct.attenuation);
   printf("Transition Band(int)  = %f\n",configstruct.transition_band);
   printf("Npoles  = %d\n",configstruct.npoles);
   printf("passes  = %d\n",configstruct.passes);
- 
+ */
+
   if( argc == 1 ) {
 	usage();
 	exit(-1);
@@ -133,14 +149,18 @@ main(int argc, char **argv)
 	count++;
   }
 
+cudaMalloc(&device_data,count*nlen*sizeof(float));
+cudaMemcpy(data,device_data, count*nlen*sizeof(float), cudaMemcpyHostToDevice);
+cudaFree(device_data);
+
 print_array(data,count,nlen);
 free(*data);
 fclose(fid);
 if (line)
         free(line);
  
-  
-  exit(0);
+cudaDeviceReset();  
+return EXIT_SUCCESS;
 }
 
 // Strips trailing characters
@@ -190,3 +210,6 @@ fprintf(stdout, "Writing fie data.dat\n");
 fclose(fout);
 }
 
+__device__ void initDeviceVectors(int *vecA, int lL){
+	
+}
