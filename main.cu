@@ -7,14 +7,13 @@
 #include <unistd.h>
 #include "crsmex.h"
 #include <cuda.h>
-
 extern "C"{
 #include <sacio.h>
 #include <sac.h>
 }
 
 /* Define the maximum length of the data array */
-#define MAX 100000
+#define MAX_ARRAY 100000
 #define NSAC 100
 #define N_FILENAME 100
 #define MAX_PATH 100
@@ -25,6 +24,7 @@ extern "C"{
 char *strstrip(char *s); // Deletes trailing characters when reading filenames. Similar to .rtrip() in Python.
 void usage();            // Show usage
 void print_array(float **array, int M, int N);
+void check_gpu_card_type(void);
 const char CONFIG_FILENAME[]="config.conf";
 
 __device__ void initDeviceVectors(int *vecA, int lL);
@@ -33,9 +33,9 @@ int
 main(int argc, char **argv)
 {
   /* Define variables to be used in the call to rsac1() */
-  float   yarray[MAX];
+  float   yarray[MAX_ARRAY];
   float   beg, del;
-  int     nlen, nerr, max = MAX, opt = 0;
+  int     nlen, nerr, max = MAX_ARRAY, opt = 0;
   float   *data[NSAC];
   float   *device_data;
   char    kname[ N_FILENAME ] ;
@@ -71,7 +71,10 @@ main(int argc, char **argv)
   if( argc == 1 ) {
 	usage();
 	exit(-1);
-  } 
+  }
+
+  check_gpu_card_type();
+ 
   while((opt = getopt(argc, argv, "f:")) != -1){
 	switch(opt){
 	      case 'f':
@@ -85,7 +88,7 @@ main(int argc, char **argv)
   }
   line = (char  *)malloc(line_size    * sizeof(char));
   for (int i=0; i<NSAC; i++)
-  	data[i] = (float *)malloc( MAX  * sizeof(float));  
+  	data[i] = (float *)malloc( MAX_ARRAY  * sizeof(float));  
 
   fid = fopen(infilename,"r");
   if (fid == NULL){
@@ -213,3 +216,27 @@ fclose(fout);
 __device__ void initDeviceVectors(int *vecA, int lL){
 	
 }
+
+void check_gpu_card_type()
+{
+  int nDevices;
+  cudaGetDeviceCount(&nDevices);
+  if (nDevices == 0){
+	fprintf(stderr,"ERROR - No GPU card detected.\n");
+	exit(-1);
+  }
+
+  for (int i = 0; i < nDevices; i++) {
+    cudaDeviceProp prop;
+    cudaGetDeviceProperties(&prop, i);
+    printf("Device Number: %d\n", i);
+    printf("  Device name: %s\n", prop.name);
+    printf("  Memory Clock Rate (KHz): %d\n",
+           prop.memoryClockRate);
+    printf("  Memory Bus Width (bits): %d\n",
+           prop.memoryBusWidth);
+    printf("  Peak Memory Bandwidth (GB/s): %f\n\n",
+           2.0*prop.memoryClockRate*(prop.memoryBusWidth/8)/1.0e6);
+  }
+}
+

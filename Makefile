@@ -8,7 +8,7 @@ LINK := nvcc $(ARCH)
 NVCC  := nvcc $(ARCH)
 
 # Includes
-INCLUDES = -I. -I$(CUDA_INSTALL_PATH)/include -I$(SAC_INSTALL_PATH)/include
+INCLUDES = -I. -I$(CUDA_INSTALL_PATH)/include -I$(SAC_INSTALL_PATH)/include 
 
 # Common flags
 COMMONFLAGS += $(INCLUDES)
