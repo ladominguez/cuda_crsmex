@@ -27,7 +27,8 @@ void print_array(float **array, int M, int N);
 void check_gpu_card_type(void);
 const char CONFIG_FILENAME[]="config.conf";
 
-__device__ void initDeviceVectors(int *vecA, int lL);
+__device__  void initDeviceVectors(int *vecA, int lL);
+__global__  void find_repeaters(float *data, int npts);
 
 int
 main(int argc, char **argv)
@@ -154,9 +155,13 @@ main(int argc, char **argv)
 
 cudaMalloc(&device_data,count*nlen*sizeof(float));
 cudaMemcpy(data,device_data, count*nlen*sizeof(float), cudaMemcpyHostToDevice);
-cudaFree(device_data);
 
-print_array(data,count,nlen);
+
+find_repeaters<<<count, nlen >>> (device_data, nlen);
+
+
+cudaFree(device_data);
+//print_array(data,count,nlen);
 free(*data);
 fclose(fid);
 if (line)
@@ -164,6 +169,16 @@ if (line)
  
 cudaDeviceReset();  
 return EXIT_SUCCESS;
+}
+
+__global__ void find_repeaters(float *data,int npts){
+__shared__ float* trace;
+
+trace = (float *)malloc(npts*sizeof(float));
+
+for(int currentBlockOfPoints = 0; currentBlockOfPoints < gridDim.x; currentBlockOfPoints++)
+	trace[threadIdx.x] = data[threadIdx.x + currentBlockOfPoints*npts];
+	
 }
 
 // Strips trailing characters
@@ -214,6 +229,7 @@ fclose(fout);
 }
 
 __device__ void initDeviceVectors(int *vecA, int lL){
+
 	
 }
 
