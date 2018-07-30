@@ -7,9 +7,23 @@
 #include <unistd.h>
 #include "crsmex.h"
 #include <cuda.h>
+#include <cufft.h>
 extern "C"{
 #include <sacio.h>
 #include <sac.h>
+}
+
+/********************/
+/* CUDA ERROR CHECK */
+/********************/
+#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
+{
+   if (code != cudaSuccess)
+   {
+      fprintf(stderr,"GPUassert: %s %s %dn", cudaGetErrorString(code), file, line);
+      if (abort) exit(code);
+   }
 }
 
 /* Define the maximum length of the data array */
@@ -27,26 +41,26 @@ void print_array(float **array, int M, int N);
 void check_gpu_card_type(void);
 const char CONFIG_FILENAME[]="config.conf";
 
+
 __device__  void initDeviceVectors(int *vecA, int lL);
 __global__  void find_repeaters(float *data, int npts);
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   /* Define variables to be used in the call to rsac1() */
-  float   yarray[MAX_ARRAY];
-  float   beg, del;
-  int     nlen, nerr, max = MAX_ARRAY, opt = 0;
-  float   *data[NSAC];
-  float   *device_data;
-  char    kname[ N_FILENAME ] ;
-  char    infilename[ N_FILENAME ] ;
-  FILE    *fid;
-  size_t  len=0;
-  int     count=0;
+  float     yarray[MAX_ARRAY];
+  float     beg, del;
+  int       nlen, nerr, max = MAX_ARRAY, opt = 0;
+  float     *data[NSAC];
+  char      kname[ N_FILENAME ] ;
+  char      infilename[ N_FILENAME ] ;
+  FILE      *fid;
+  size_t    len=0;
+  int       count=0;
+  cufftReal *device_data;
 
-  char  *line;
-  size_t line_size = 100;
+  char      *line;
+  size_t    line_size = 100;
 
   /* Filtering variables */
   struct config_filter configstruct;
@@ -59,6 +73,8 @@ main(int argc, char **argv)
 
   dim3 dimGrid(grdSize, grdSize, grdSize);
   dim3 dimBlock(blockSize, blockSize, blockSize);
+   
+
 
  /*
   printf("Low(int)  = %f\n",configstruct.low);
@@ -74,8 +90,10 @@ main(int argc, char **argv)
 	exit(-1);
   }
 
+  // Check is a GPU card is available.
   check_gpu_card_type();
- 
+
+  // Retrieve input parameters 
   while((opt = getopt(argc, argv, "f:")) != -1){
 	switch(opt){
 	      case 'f':
@@ -87,16 +105,21 @@ main(int argc, char **argv)
 		exit(-1);
         }
   }
+
   line = (char  *)malloc(line_size    * sizeof(char));
+
   for (int i=0; i<NSAC; i++)
   	data[i] = (float *)malloc( MAX_ARRAY  * sizeof(float));  
 
+  // Read input filenames.
   fid = fopen(infilename,"r");
   if (fid == NULL){
 	fprintf(stderr,"Couldn't open file %s\n",infilename);
 	exit(-1);
   } 
- //while ((read = getline(&line, &len, fid)) != -1)
+ 
+
+ // Read sac files into host memory.
  while (getline(&line, &len, fid) != -1)
   {
 	line = strstrip(line);
@@ -153,14 +176,48 @@ main(int argc, char **argv)
 	count++;
   }
 
-cudaMalloc(&device_data,count*nlen*sizeof(float));
-cudaMemcpy(data,device_data, count*nlen*sizeof(float), cudaMemcpyHostToDevice);
+  /* CUDA FFT */
+  cufftHandle plan;
+  cufftComplex *fft_data;
+  int rank = 1;                                  // --- 1D FFTs
+  int n[] = { nlen };                            // --- Size of the Fourier transform
+  int istride = 1, ostride = 1;                  // --- Distance between two successive input/output elements
+  int idist = MAX_ARRAY, odist = (nlen / 2 + 1); // --- Distance between batches
+  int inembed[] = { 0 };                         // --- Input size with pitch (ignored for 1D transforms)
+  int onembed[] = { 0 };                         // --- Output size with pitch (ignored for 1D transforms)
+  int batch = count;                             // --- Number of batched executions
 
+ 
+  // Initiazilizing device data for fft processing
+  gpuErrchk(cudaMalloc((void**)&device_data,    MAX_ARRAY * count * sizeof(cufftReal   )));
+  gpuErrchk(cudaMalloc((void**)&fft_data,  (nlen / 2 + 1) * count * sizeof(cufftComplex)));
+
+  cudaMemcpy(data,device_data, count * nlen * sizeof(float), cudaMemcpyHostToDevice);
+
+  cufftPlanMany(&plan, rank, n, 
+                inembed, istride, idist,
+                onembed, ostride, odist, CUFFT_R2C, batch);
+   cufftExecR2C(plan, device_data, fft_data);
+  //gpuErrchk(cudaMemcpy(device_data, data, count*nlen*sizeof(float), cudaMemcpyHostToDevice));
+/*
+  cudaMemcpy2DToArray(device_data, 
+                    0, 
+                    0,  
+                    data,
+                    MAX_ARRAY * sizeof(float),  
+                    nlen      * sizeof(float), 
+                    count     * sizeof(float),  cudaMemcpyHostToDevice);
+  printf("Hola\n");
+*/
+printf("idist = %d\n", idist);
+printf("odist = %d\n", odist);
+printf("n = %d\n", n[0]);
 
 find_repeaters<<<count, nlen >>> (device_data, nlen);
 
 
-cudaFree(device_data);
+gpuErrchk(cudaFree(device_data));
+
 //print_array(data,count,nlen);
 free(*data);
 fclose(fid);
