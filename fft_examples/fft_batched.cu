@@ -1,3 +1,6 @@
+//nvcc -arch=sm_30 -lcufft fft_batched.cu
+
+
 #include <cuda.h>
 #include <cufft.h>
 #include <stdio.h>
@@ -68,7 +71,7 @@ int main ()
     cufftExecR2C(handle,  deviceInputData, deviceOutputData);
 
     // --- Device->Host copy of the results
-    //gpuErrchk(cudaMemcpy(hostOutputData, deviceOutputData, (DATASIZE / 2 + 1) * BATCH * sizeof(cufftComplex), cudaMemcpyDeviceToHost));
+    gpuErrchk(cudaMemcpy(hostOutputData, deviceOutputData, (DATASIZE / 2 + 1) * BATCH * sizeof(cufftComplex), cudaMemcpyDeviceToHost));
 
     for (int i=0; i<BATCH; i++)
         for (int j=0; j<(DATASIZE / 2 + 1); j++)

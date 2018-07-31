@@ -27,10 +27,10 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
 }
 
 /* Define the maximum length of the data array */
-#define MAX_ARRAY 100000
-#define NSAC 100
+#define MAX_ARRAY  100000
+#define NSAC       100
 #define N_FILENAME 100
-#define MAX_PATH 100
+#define MAX_PATH   100
 
 #define GRID_SIZE  1
 #define BLOCK_SIZE 4
@@ -38,11 +38,10 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
 char *strstrip(char *s); // Deletes trailing characters when reading filenames. Similar to .rtrip() in Python.
 void usage();            // Show usage
 void print_array(float **array, int M, int N);
+void print_fft(  cufftComplex *fft, int batch, int size_fft);
 void check_gpu_card_type(void);
 const char CONFIG_FILENAME[]="config.conf";
 
-
-__device__  void initDeviceVectors(int *vecA, int lL);
 __global__  void find_repeaters(float *data, int npts);
 
 int main(int argc, char **argv)
@@ -165,65 +164,89 @@ int main(int argc, char **argv)
      *                 - 1 Forward filter only 
      *                 - 2 Forward and reverse (i.e. zero-phase) filtering 
      */
+
+/*
     xapiir(yarray, nlen, (char *)SAC_BUTTERWORTH, 
            configstruct.transition_band, configstruct.attenuation, 
            configstruct.npoles, 
            (char *)SAC_HIGHPASS, 
            configstruct.low, configstruct.high, 
            del, configstruct.passes);
-       /* END */
-	memcpy(data[count],yarray,nlen*sizeof(float));
-	count++;
+     /* END */
+     memcpy(data[count],yarray,nlen*sizeof(float));
+     count++;
   }
 
   /* CUDA FFT */
-  cufftHandle plan;
-  cufftComplex *fft_data;
-  int rank = 1;                                  // --- 1D FFTs
-  int n[] = { nlen };                            // --- Size of the Fourier transform
-  int istride = 1, ostride = 1;                  // --- Distance between two successive input/output elements
-  int idist = MAX_ARRAY, odist = (nlen / 2 + 1); // --- Distance between batches
-  int inembed[] = { 0 };                         // --- Input size with pitch (ignored for 1D transforms)
-  int onembed[] = { 0 };                         // --- Output size with pitch (ignored for 1D transforms)
-  int batch = count;                             // --- Number of batched executions
+  nlen          = 32768; // Test value - delete after test.
 
+  cufftHandle   plan;
+  cufftComplex *fft_data;
+  cufftComplex *hostOutputFFT;
+  int rank      = 1;                                 // --- 1D FFTs
+  int n[]       = { nlen };                          // --- Size of the Fourier transform
+  int istride   = 1, ostride = 1;                    // --- Distance between two successive input/output elements
+  int idist     = MAX_ARRAY, odist = (nlen / 2 + 1); // --- Distance between batches
+  int inembed[] = { 0 };                             // --- Input size with pitch (ignored for 1D transforms)
+  int onembed[] = { 0 };                             // --- Output size with pitch (ignored for 1D transforms)
+  int size_fft  = (nlen / 2 + 1);
+  int batch = count;                                 // --- Number of batched executions
+
+  printf(" ********** CONFG *********\n");
+  printf(" rank     = %d\n", rank       );
+  printf(" n[0]     = %d\n", n[0]       );
+  printf(" inembed  = %d\n", inembed[0] );
+  printf(" istride  = %d\n", istride    );
+  printf(" onembed  = %d\n", onembed[0] );
+  printf(" ostride  = %d\n", ostride    );
+  printf(" odist    = %d\n", odist      );
+  printf(" batch    = %d\n", batch      );
+  printf(" size_fft = %d\n", size_fft   );
+  printf(" **************************\n");
  
   // Initiazilizing device data for fft processing
-  gpuErrchk(cudaMalloc((void**)&device_data,    MAX_ARRAY * count * sizeof(cufftReal   )));
-  gpuErrchk(cudaMalloc((void**)&fft_data,  (nlen / 2 + 1) * count * sizeof(cufftComplex)));
+  gpuErrchk(cudaMalloc((void**)&device_data,            nlen * count * sizeof(cufftReal   )));
+  gpuErrchk(cudaMalloc((void**)&fft_data,           size_fft * count * sizeof(cufftComplex)));
+  hostOutputFFT = (cufftComplex*)malloc(            size_fft * count * sizeof(cufftComplex));
+  gpuErrchk(cudaMemcpy(device_data, data,               nlen * count * sizeof(float)         , cudaMemcpyHostToDevice));
 
-  cudaMemcpy(data,device_data, count * nlen * sizeof(float), cudaMemcpyHostToDevice);
-
+  
+  
   cufftPlanMany(&plan, rank, n, 
                 inembed, istride, idist,
                 onembed, ostride, odist, CUFFT_R2C, batch);
-   cufftExecR2C(plan, device_data, fft_data);
-  //gpuErrchk(cudaMemcpy(device_data, data, count*nlen*sizeof(float), cudaMemcpyHostToDevice));
-/*
-  cudaMemcpy2DToArray(device_data, 
+
+  cufftExecR2C(plan, device_data, fft_data);
+
+  gpuErrchk(cudaMemcpy(hostOutputFFT, fft_data, size_fft * count * sizeof(cufftComplex), cudaMemcpyDeviceToHost));
+
+  printf(" %f %f\n",  hostOutputFFT[0].x,hostOutputFFT[0].y );
+  print_fft(hostOutputFFT, batch, size_fft);
+  //print_array(data,count,nlen);
+  /*
+    cudaMemcpy2DToArray(device_data, 
                     0, 
                     0,  
                     data,
                     MAX_ARRAY * sizeof(float),  
                     nlen      * sizeof(float), 
                     count     * sizeof(float),  cudaMemcpyHostToDevice);
-  printf("Hola\n");
 */
-printf("idist = %d\n", idist);
-printf("odist = %d\n", odist);
+
 printf("n = %d\n", n[0]);
 
 find_repeaters<<<count, nlen >>> (device_data, nlen);
 
 
+/* Closing */
 gpuErrchk(cudaFree(device_data));
-
-//print_array(data,count,nlen);
+gpuErrchk(cudaFree(fft_data));
+cufftDestroy(plan);
 free(*data);
 fclose(fid);
 if (line)
         free(line);
- 
+
 cudaDeviceReset();  
 return EXIT_SUCCESS;
 }
@@ -269,6 +292,28 @@ fprintf(stderr,"        Author: Luis A. Dominguez - ladominguez@ucla.edu\n\n");
 
 }
 
+void print_fft(cufftComplex *fft, int batch, int size_fft)
+{
+FILE *fout;
+char filename[] = "outputX.dat";
+	for (int i = 0; i < batch; i++){
+		filename[6] = i + '0';
+		printf("Writting file: %s\n", filename);
+		fout = fopen(filename, "w");
+		fprintf(stdout, "data size = %d\n", size_fft);
+		
+		for (int j = 0; j < size_fft; j++){
+			fprintf(fout, "%f %f \n", fft[i*size_fft + j].x, fft[i*size_fft + j].y);
+			//printf("%f %f \n", fft[0].x, fft[0].y);
+		}
+		fclose(fout);
+	}
+
+}
+
+
+//fclose(fout);
+
 void print_array(float **array, int M, int N)
 {
 FILE *fout;
@@ -281,14 +326,11 @@ fout = fopen("data.dat","w");
 			fprintf(fout,"%8.3f ",array[i][j]);
 		fprintf(fout,"\n");
 	}
+
 fprintf(stdout, "Writing fie data.dat\n");
 fclose(fout);
 }
 
-__device__ void initDeviceVectors(int *vecA, int lL){
-
-	
-}
 
 void check_gpu_card_type()
 {
@@ -302,14 +344,11 @@ void check_gpu_card_type()
   for (int i = 0; i < nDevices; i++) {
     cudaDeviceProp prop;
     cudaGetDeviceProperties(&prop, i);
-    printf("Device Number: %d\n", i);
-    printf("  Device name: %s\n", prop.name);
-    printf("  Memory Clock Rate (KHz): %d\n",
-           prop.memoryClockRate);
-    printf("  Memory Bus Width (bits): %d\n",
-           prop.memoryBusWidth);
-    printf("  Peak Memory Bandwidth (GB/s): %f\n\n",
-           2.0*prop.memoryClockRate*(prop.memoryBusWidth/8)/1.0e6);
+    printf("            Device Number: %d\n", i);
+    printf("              Device name: %s\n",            prop.name);
+    printf("  Memory Clock Rate (KHz): %d\n",            prop.memoryClockRate);
+    printf("  Memory Bus Width (bits): %d\n",            prop.memoryBusWidth);
+    printf("  Peak Memory Bandwidth (GB/s): %f\n\n", 2.0*prop.memoryClockRate*(prop.memoryBusWidth/8)/1.0e6);
   }
 }
 
