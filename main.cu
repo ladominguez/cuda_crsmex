@@ -28,7 +28,7 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
 
 /* Define the maximum length of the data array */
 #define MAX_ARRAY  100000
-#define NSAC       100
+#define NSAC       20
 #define N_FILENAME 100
 #define MAX_PATH   100
 
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
   float     yarray[MAX_ARRAY];
   float     beg, del;
   int       nlen, nerr, max = MAX_ARRAY, opt = 0;
-  float     *data[NSAC];
+  float     *data;
   char      kname[ N_FILENAME ] ;
   char      infilename[ N_FILENAME ] ;
   FILE      *fid;
@@ -107,8 +107,10 @@ int main(int argc, char **argv)
 
   line = (char  *)malloc(line_size    * sizeof(char));
 
-  for (int i=0; i<NSAC; i++)
-  	data[i] = (float *)malloc( MAX_ARRAY  * sizeof(float));  
+//  for (int i=0; i<NSAC; i++)
+//  	data[i] = (float *)malloc( MAX_ARRAY  * sizeof(float));  
+
+  data = (float *)malloc(NSAC * MAX_ARRAY * sizeof(float));	
 
   // Read input filenames.
   fid = fopen(infilename,"r");
@@ -173,7 +175,7 @@ int main(int argc, char **argv)
            configstruct.low, configstruct.high, 
            del, configstruct.passes);
      /* END */
-     memcpy(data[count],yarray,nlen*sizeof(float));
+     memcpy(&data[count*MAX_ARRAY], yarray, nlen*sizeof(float));
      count++;
   }
 
@@ -201,14 +203,15 @@ int main(int argc, char **argv)
   printf(" ostride  = %d\n", ostride    );
   printf(" odist    = %d\n", odist      );
   printf(" batch    = %d\n", batch      );
+  printf(" count    = %d\n", count      );
   printf(" size_fft = %d\n", size_fft   );
   printf(" **************************\n");
  
   // Initiazilizing device data for fft processing
-  gpuErrchk(cudaMalloc((void**)&device_data,            nlen * count * sizeof(cufftReal   )));
+  gpuErrchk(cudaMalloc((void**)&device_data,       MAX_ARRAY * count * sizeof(cufftReal   )));
   gpuErrchk(cudaMalloc((void**)&fft_data,           size_fft * count * sizeof(cufftComplex)));
   hostOutputFFT = (cufftComplex*)malloc(            size_fft * count * sizeof(cufftComplex));
-  gpuErrchk(cudaMemcpy(device_data, data,               nlen * count * sizeof(float)         , cudaMemcpyHostToDevice));
+  gpuErrchk(cudaMemcpy(device_data, data,          MAX_ARRAY * count * sizeof(float)         , cudaMemcpyHostToDevice));
 
   
   
@@ -242,7 +245,7 @@ find_repeaters<<<count, nlen >>> (device_data, nlen);
 gpuErrchk(cudaFree(device_data));
 gpuErrchk(cudaFree(fft_data));
 cufftDestroy(plan);
-free(*data);
+free(data);
 fclose(fid);
 if (line)
         free(line);
