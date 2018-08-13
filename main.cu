@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <math.h>
 #include "crsmex.h"
 #include <cuda.h>
 #include <cufft.h>
@@ -40,6 +41,9 @@ void usage();            // Show usage
 void print_array(float **array, int M, int N);
 void print_fft(  cufftComplex *fft, int batch, int size_fft);
 void check_gpu_card_type(void);
+void plot_array(float **array, int M, int N);
+void plot_fft(int N);
+
 const char CONFIG_FILENAME[]="config.conf";
 
 __global__  void find_repeaters(float *data, int npts);
@@ -225,6 +229,7 @@ int main(int argc, char **argv)
 
   printf(" %f %f\n",  hostOutputFFT[0].x,hostOutputFFT[0].y );
   print_fft(hostOutputFFT, batch, size_fft);
+  plot_fft(batch);
   //print_array(data,count,nlen);
   /*
     cudaMemcpy2DToArray(device_data, 
@@ -298,6 +303,7 @@ fprintf(stderr,"        Author: Luis A. Dominguez - ladominguez@ucla.edu\n\n");
 void print_fft(cufftComplex *fft, int batch, int size_fft)
 {
 FILE *fout;
+// print out individual files
 char filename[] = "outputX.dat";
 	for (int i = 0; i < batch; i++){
 		filename[6] = i + '0';
@@ -306,8 +312,9 @@ char filename[] = "outputX.dat";
 		fprintf(stdout, "data size = %d\n", size_fft);
 		
 		for (int j = 0; j < size_fft; j++){
-			fprintf(fout, "%f %f \n", fft[i*size_fft + j].x, fft[i*size_fft + j].y);
-			//printf("%f %f \n", fft[0].x, fft[0].y);
+			fprintf(fout, "%f %f %f \n", fft[i*size_fft + j].x, fft[i*size_fft + j].y, 
+                                  sqrt(fft[i*size_fft + j].x*fft[i*size_fft + j].x + fft[i*size_fft + j].y*fft[i*size_fft + j].y));
+			
 		}
 		fclose(fout);
 	}
@@ -316,6 +323,26 @@ char filename[] = "outputX.dat";
 
 
 //fclose(fout);
+
+void plot_fft(int N)
+{
+FILE   *gnuplot = NULL;
+char filename[] = "outputX.dat";
+gnuplot=popen("gnuplot","w");
+fprintf(gnuplot,"set term postscript eps enhanced color\n");
+
+        for(int i=0; i<N; i++ ){
+		filename[6] = i + '0';
+		fprintf(stdout, "Plot array using gnuplot - %s\n", filename);
+		fprintf(gnuplot, "set logscale xz\n");
+                fprintf(gnuplot, "set output 'graphics_fft_%i.eps'\n", i);
+                fprintf(gnuplot, "plot '%s' u 3 with lines\n", filename);
+                fprintf(gnuplot, "set output\n");
+                fflush(gnuplot);
+        }
+        pclose(gnuplot);
+
+}
 
 void print_array(float **array, int M, int N)
 {
