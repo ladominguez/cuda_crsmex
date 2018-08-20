@@ -43,7 +43,7 @@ void print_fft(  cufftComplex *fft, int batch, int size_fft);
 void check_gpu_card_type(void);
 void plot_array(float **array, int M, int N);
 void plot_fft(int N);
-
+void run_unit_test();
 const char CONFIG_FILENAME[]="config.conf";
 
 __global__  void find_repeaters(float *data, int npts);
@@ -97,8 +97,12 @@ int main(int argc, char **argv)
   check_gpu_card_type();
 
   // Retrieve input parameters 
-  while((opt = getopt(argc, argv, "f:")) != -1){
+  while((opt = getopt(argc, argv, "f:t")) != -1){
 	switch(opt){
+	      case 't':
+		run_unit_test();
+		exit(-1);
+		break;
 	      case 'f':
 		strncpy(infilename, optarg, MAX_PATH);
 		break;
@@ -361,6 +365,19 @@ fprintf(stdout, "Writing fie data.dat\n");
 fclose(fout);
 }
 
+void run_unit_test(){
+
+fprintf(stdout,"\n*** RUNING TEST UNIT ***\n\n");
+
+char filename1[]="20011105104504.IG.PLIG.BHZ.sac";
+char filename2[]="20040403234914.IG.PLIG.BHZ.sac";
+char filename3[]="20080925043418.IG.PLIG.BHZ.sac";
+
+fprintf(stdout,"%s\n",filename1);
+fprintf(stdout,"%s\n",filename2);
+fprintf(stdout,"%s\n",filename3);
+
+}
 
 void check_gpu_card_type()
 {
