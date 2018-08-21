@@ -36,8 +36,9 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
 #define GRID_SIZE  1
 #define BLOCK_SIZE 4
 
-char *strstrip(char *s); // Deletes trailing characters when reading filenames. Similar to .rtrip() in Python.
+//char *strstrip(char *s); // Deletes trailing characters when reading filenames. Similar to .rtrip() in Python.
 void usage();            // Show usage
+void print_array(float **array, int nsac, int npts, int step);
 void print_array(float **array, int M, int N);
 void print_fft(  cufftComplex *fft, int batch, int size_fft);
 void check_gpu_card_type(void);
@@ -272,7 +273,7 @@ for(int currentBlockOfPoints = 0; currentBlockOfPoints < gridDim.x; currentBlock
 	trace[threadIdx.x] = data[threadIdx.x + currentBlockOfPoints*npts];
 	
 }
-
+/*
 // Strips trailing characters
 char *strstrip(char *s)
 {
@@ -294,7 +295,7 @@ char *strstrip(char *s)
 
         return s;
 }
-
+*/
 void usage(){
 fprintf(stderr,"\nCUDA CRSMEX   -  Characteristic Repeating Earthquakes Code \n\n");
 fprintf(stderr," This program looks for characteristic repeating earthquakes using GPU/CUDA\n");
@@ -361,22 +362,41 @@ fout = fopen("data.dat","w");
 		fprintf(fout,"\n");
 	}
 
-fprintf(stdout, "Writing fie data.dat\n");
+fprintf(stdout, "Writing file data.dat\n");
 fclose(fout);
 }
 
+void print_array(float *array, int nsac, int npts, int step)
+{
+FILE *fout;
+fprintf(stdout,"nsac = %d\n", nsac);
+fprintf(stdout,"npts = %d\n", npts);
+
+fout = fopen("data.dat","w");
+        for (int i = 0; i < npts; i++){
+                for (int j = 0; j < nsac; j++)
+                        fprintf(fout,"%8.3f ",array[j*step + i]);
+                fprintf(fout,"\n");
+        }
+
+fprintf(stdout, "Writing file data.dat\n");
+fclose(fout);
+}
+
+
 void run_unit_test(){
 
+float *data;
+int   nsac = 0;
+int   npts = 0;
+int   N    = 3; // Only memory for three waveforms is reserved.
+char filename_test[]="./unit_test/unit_test.dat";
+
+
 fprintf(stdout,"\n*** RUNING TEST UNIT ***\n\n");
-
-char filename1[]="20011105104504.IG.PLIG.BHZ.sac";
-char filename2[]="20040403234914.IG.PLIG.BHZ.sac";
-char filename3[]="20080925043418.IG.PLIG.BHZ.sac";
-
-fprintf(stdout,"%s\n",filename1);
-fprintf(stdout,"%s\n",filename2);
-fprintf(stdout,"%s\n",filename3);
-
+data = (float *)malloc(N * MAX_ARRAY * sizeof(float));
+load_sac_in_host_memory(data, filename_test, &nsac, &npts );
+print_array(data, nsac, npts, MAX_ARRAY);
 }
 
 void check_gpu_card_type()

@@ -34,3 +34,7 @@ LINKLINE     = $(LINK) -o $(TARGET) $(OBJS) $(LIB_SAC)
 
 $(TARGET): $(OBJS) Makefile
 	$(LINKLINE)
+
+clean:
+	rm output/*.dat
+	rm graphics/*.eps
