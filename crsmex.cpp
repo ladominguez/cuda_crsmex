@@ -56,7 +56,7 @@ struct config_filter get_config(const char *filename)
 
 }
 
-void load_sac_in_host_memory(float *data_host, char *infilename, int *nsac, int *npts){
+void load_sac_in_host_memory(float *data_host, char *infilename, int *nsac, int *npts, bool filter, config_filter configstruct){
 char    *line;
 size_t  len = 0;
 int     nlen, nerr, max = MAX_ARRAY, opt = 0;
@@ -87,6 +87,7 @@ while (getline(&line, &len, fid) != -1)
                 fprintf(stderr,"Reading SUCCESS: %s\n",kname);
                 fprintf(stderr,"Number of samples read: %d\n\n",nlen);
         }
+	
    
    //     if (filtering){
     /* START - FILTERING */
@@ -122,13 +123,14 @@ while (getline(&line, &len, fid) != -1)
      *                 - 2 Forward and reverse (i.e. zero-phase) filtering
      */
 
-/*
-    xapiir(yarray, nlen, (char *)SAC_BUTTERWORTH,
-           configstruct.transition_band, configstruct.attenuation,
-           configstruct.npoles,
-           (char *)SAC_HIGHPASS,
-           configstruct.low, configstruct.high,
-           del, configstruct.passes);
+    if (filter){
+   	 xapiir(yarray, nlen, (char *)SAC_BUTTERWORTH,
+        	configstruct.transition_band, configstruct.attenuation,
+           	configstruct.npoles,
+           	(char *)SAC_HIGHPASS,
+           	configstruct.low, configstruct.high,
+           	del, configstruct.passes);
+    }
      /* END */
 //     }
      memcpy(&data_host[*nsac*MAX_ARRAY], yarray, nlen*sizeof(float));
