@@ -56,16 +56,16 @@ struct config_filter get_config(const char *filename)
 
 }
 
-void load_sac_in_host_memory(float *data_host, char *infilename, int *nsac, int *npts, bool filter, config_filter configstruct){
+void load_sac_in_host_memory(float *data_host, char *infilename, int *nsac, int *npts, int win_size, bool filter, config_filter configstruct){
 char    *line;
 size_t  len = 0;
 int     nlen, nerr, max = MAX_ARRAY, opt = 0;
 int     nzyear, nzday, nzhour, nzmin, nzsec;
-int     month, day;
+int     month, day, beg_win;
 FILE    *fid;
 float   yarray[MAX_ARRAY];
 char    kname[ N_FILENAME ];
-float   beg, del;
+float   beg, del, t0, t5, amarker;
 int     count = 0;
 *nsac = 0;
 
@@ -89,13 +89,23 @@ while (getline(&line, &len, fid) != -1)
                 fprintf(stderr,"Number of samples read: %d\n",nlen);
         }
 
-	getnhv ((char *) "NZYEAR" , & nzyear , &nerr , 6 ) ;		
-	getnhv ((char *) "NZJDAY" , & nzday  , & nerr , strlen("NZJDAY") ) ;		
-	getnhv ((char *) "NZHOUR" , & nzhour , & nerr , strlen("NZHOUR") ) ;		
-	getnhv ((char *) "NZMIN"  , & nzmin  , & nerr , strlen("NZMIN" ) ) ;		
-        getnhv ((char *) "NZSEC"  , & nzsec  , & nerr , strlen("NZSEC" ) ) ;		
+	getnhv ((char *)  "NZYEAR" , & nzyear , &nerr  , strlen("NZYEAR" ) ) ;		
+	getnhv ((char *)  "NZJDAY" , & nzday  , & nerr , strlen("NZJDAY" ) ) ;		
+	getnhv ((char *)  "NZHOUR" , & nzhour , & nerr , strlen("NZHOUR" ) ) ;		
+	getnhv ((char *)  "NZMIN"  , & nzmin  , & nerr , strlen("NZMIN"  ) ) ;		
+        getnhv ((char *)  "NZSEC"  , & nzsec  , & nerr , strlen("NZSEC"  ) ) ;		
+	getfhv ((char *)  "T0"     , & t0     , & nerr , strlen("T0"     ) ) ;
+	getfhv ((char *)  "T5"     , & t5     , & nerr , strlen("T5"     ) ) ;
+	getfhv ((char *)  "A"      , & amarker, & nerr , strlen("A") ) ;
+        beg_win = (int) ((amarker - beg)/del);
         julian2mmdd(nzyear, nzday, &month, &day);
         fprintf(stdout, "Julian: %d  %d/%d/%d %d:%d:%d\n", nzday, nzyear, month, day, nzhour, nzmin, nzsec);
+        fprintf(stdout, "beg: %6.2f\n", beg     );
+        fprintf(stdout, "am: %6.2f\n",  amarker );
+        fprintf(stdout, "del: %6.2f\n", del     );
+        fprintf(stdout, "t0: %6.2f\n", t0 );
+        fprintf(stdout, "t5: %6.2f\n", t5 );
+        fprintf(stdout, "bw: %d\n",    beg_win );
 	fprintf(stdout, "\n");
    //     if (filtering){
     /* START - FILTERING */
@@ -141,7 +151,7 @@ while (getline(&line, &len, fid) != -1)
     }
      /* END */
 //     }
-     memcpy(&data_host[*nsac*MAX_ARRAY], yarray, nlen*sizeof(float));
+     memcpy(&data_host[*nsac*MAX_ARRAY], &yarray[beg_win], win_size*sizeof(float));
      ++*nsac;
   }
 

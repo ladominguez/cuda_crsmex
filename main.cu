@@ -392,12 +392,13 @@ int   npts = 0;
 int   N    = 3; // Only memory for three waveforms is reserved.
 char  filename_test[]="./unit_test/unit_test.dat";
 struct config_filter configstruct;
+int win_size = 512;
 
 configstruct = get_config(CONFIG_FILENAME);
 
 fprintf(stdout,"\n*** RUNING TEST UNIT ***\n\n");
 data = (float *)malloc(N * MAX_ARRAY * sizeof(float));
-load_sac_in_host_memory(data, filename_test, &nsac, &npts, true,  configstruct);
+load_sac_in_host_memory(data, filename_test, &nsac, &npts, win_size, true,  configstruct);
 print_array(data, nsac, npts, MAX_ARRAY);
 }
 
