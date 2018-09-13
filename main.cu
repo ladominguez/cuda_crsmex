@@ -9,6 +9,7 @@
 #include "crsmex.h"
 #include <cuda.h>
 #include <cufft.h>
+#include <cuComplex.h>
 extern "C"{
 #include <sacio.h>
 #include <sac.h>
@@ -61,6 +62,7 @@ int main(int argc, char **argv)
   FILE      *fid;
   size_t    len=0;
   int       count=0;
+  int       win_size=512;
   cufftReal *device_data;
 
   char      *line;
@@ -189,10 +191,10 @@ int main(int argc, char **argv)
   }
 
   /* CUDA FFT */
-  nlen          = 32768; // Test value - delete after test.
 
   cufftHandle   plan;
   cufftComplex *fft_data;
+  cuFloatComplex *fft_data_conj;
   cufftComplex *hostOutputFFT;
   int rank      = 1;                                 // --- 1D FFTs
   int n[]       = { nlen };                          // --- Size of the Fourier transform
@@ -200,7 +202,7 @@ int main(int argc, char **argv)
   int idist     = MAX_ARRAY, odist = (nlen / 2 + 1); // --- Distance between batches
   int inembed[] = { 0 };                             // --- Input size with pitch (ignored for 1D transforms)
   int onembed[] = { 0 };                             // --- Output size with pitch (ignored for 1D transforms)
-  int size_fft  = (nlen / 2 + 1);
+  int size_fft  = (win_size / 2 + 1);
   int batch = count;                                 // --- Number of batched executions
 
   printf(" ********** CONFG *********\n");
@@ -219,6 +221,8 @@ int main(int argc, char **argv)
   // Initiazilizing device data for fft processing
   gpuErrchk(cudaMalloc((void**)&device_data,       MAX_ARRAY * count * sizeof(cufftReal   )));
   gpuErrchk(cudaMalloc((void**)&fft_data,           size_fft * count * sizeof(cufftComplex)));
+  gpuErrchk(cudaMalloc((void**)&fft_data_conj,      size_fft * count * sizeof(cufftComplex)));
+  fft_data_conj = cuConjf(fft_data);
   hostOutputFFT = (cufftComplex*)malloc(            size_fft * count * sizeof(cufftComplex));
   gpuErrchk(cudaMemcpy(device_data, data,          MAX_ARRAY * count * sizeof(float)         , cudaMemcpyHostToDevice));
 
@@ -229,7 +233,7 @@ int main(int argc, char **argv)
                 onembed, ostride, odist, CUFFT_R2C, batch);
 
   cufftExecR2C(plan, device_data, fft_data);
-
+  cufftDestroy(plan);
   gpuErrchk(cudaMemcpy(hostOutputFFT, fft_data, size_fft * count * sizeof(cufftComplex), cudaMemcpyDeviceToHost));
 
   printf(" %f %f\n",  hostOutputFFT[0].x,hostOutputFFT[0].y );

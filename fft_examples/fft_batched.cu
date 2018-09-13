@@ -9,6 +9,11 @@
 #define DATASIZE 8
 #define BATCH 3
 
+#define GRID_DIMENSION  3
+#define BLOCK_DIMENSION 3
+
+
+
 /********************/
 /* CUDA ERROR CHECK */
 /********************/
@@ -21,19 +26,28 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
       if (abort) exit(code);
    }
 }
+__global__ void conjugate(long int nelem, cufftComplex *conj);
+
 
 /********/
 /* MAIN */
 /********/
 int main ()
 {
+    
     // --- Host side input data allocation and initialization
     cufftReal *hostInputData = (cufftReal*)malloc(DATASIZE*BATCH*sizeof(cufftReal));
+    int grid_size  = GRID_DIMENSION;
+    int block_size = BLOCK_DIMENSION;
+
+    dim3 DimGrid(grid_size, grid_size, grid_size);
+    dim3 DimBlock(block_size, block_size, block_size);
+
 
     for (int i=0; i<BATCH; i++)
         for (int j=0; j<DATASIZE; j++){ 
-		hostInputData[i*DATASIZE + j] = (cufftReal)(i + 1);
-		printf("hostInputData[%d]=%d\n",i*DATASIZE + j,i+1);
+		hostInputData[i*DATASIZE + j] = (cufftReal)((i + 1) + j);
+		printf("hostInputData[%d]=%f\n",i*DATASIZE + j,hostInputData[i*DATASIZE + j]);
 	}
 
     // --- Device side input data allocation and initialization
@@ -47,7 +61,9 @@ int main ()
 
     // --- Device side output data allocation
     cufftComplex *deviceOutputData; 
+    cufftComplex *fft_conj; 
     gpuErrchk(cudaMalloc((void**)&deviceOutputData, (DATASIZE / 2 + 1) * BATCH * sizeof(cufftComplex)));
+    gpuErrchk(cudaMalloc((void**)&fft_conj,         (DATASIZE / 2 + 1) * BATCH * sizeof(cufftComplex)));
 
     // --- Batched 1D FFTs
     cufftHandle handle;
@@ -69,7 +85,8 @@ int main ()
 
     //cufftPlan1d(&handle, DATASIZE, CUFFT_R2C, BATCH);
     cufftExecR2C(handle,  deviceInputData, deviceOutputData);
-
+    gpuErrchk(cudaMemcpy(fft_conj,       deviceOutputData, (DATASIZE / 2 + 1) * BATCH * sizeof(cufftComplex), cudaMemcpyDeviceToDevice));
+    conjugate <<< DimGrid, DimBlock >>> ((DATASIZE / 2 + 1) * BATCH, fft_conj );
     // --- Device->Host copy of the results
     gpuErrchk(cudaMemcpy(hostOutputData, deviceOutputData, (DATASIZE / 2 + 1) * BATCH * sizeof(cufftComplex), cudaMemcpyDeviceToHost));
 
@@ -80,5 +97,31 @@ int main ()
     cufftDestroy(handle);
     gpuErrchk(cudaFree(deviceOutputData));
     gpuErrchk(cudaFree(deviceInputData));
+    gpuErrchk(cudaFree(fft_conj));
+    cudaDeviceSynchronize();
+    cudaDeviceReset();
+    return EXIT_SUCCESS;
 
+}
+
+__global__ void conjugate(long int nelem, cufftComplex *conj)
+{
+int bx = blockIdx.x;
+int by = blockIdx.y;
+int bz = blockIdx.z;
+
+int thx = threadIdx.x;
+int thy = threadIdx.y;
+int thz = threadIdx.z;
+
+int NumThread = blockDim.x*blockDim.y*blockDim.z;
+int idThread  = (thx + thy*blockDim.x) + thz*(blockDim.x*blockDim.y);
+int BlockId   = (bx + by*gridDim.x) + bz*(gridDim.x*gridDim.y);
+
+int uniqueid  = idThread + NumThread*BlockId;
+if (uniqueid < nelem){
+ 	printf("Unique ID = %d - conj = %f\n",  uniqueid,  conj[uniqueid].y*-1);
+}
+
+//__syncthreads();
 }
