@@ -222,7 +222,7 @@ int main(int argc, char **argv)
   gpuErrchk(cudaMalloc((void**)&device_data,       MAX_ARRAY * count * sizeof(cufftReal   )));
   gpuErrchk(cudaMalloc((void**)&fft_data,           size_fft * count * sizeof(cufftComplex)));
   gpuErrchk(cudaMalloc((void**)&fft_data_conj,      size_fft * count * sizeof(cufftComplex)));
-  fft_data_conj = cuConjf(fft_data);
+  //fft_data_conj = cuConjf(fft_data);
   hostOutputFFT = (cufftComplex*)malloc(            size_fft * count * sizeof(cufftComplex));
   gpuErrchk(cudaMemcpy(device_data, data,          MAX_ARRAY * count * sizeof(float)         , cudaMemcpyHostToDevice));
 
