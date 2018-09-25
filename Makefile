@@ -16,10 +16,10 @@ NVCCFLAGS   += $(COMMONFLAGS)
 CXXFLAGS    += $(COMMONFLAGS)
 CFLAGS      += $(COMMONFLAGS)
 #LIB_SAC := `sac-config --cflags --libs sac`
-LIB_SAC     := -L/usr/local/sac/lib  -lsacio -lsac -lm -lcufft
+LIB_SAC     := -L/usr/local/sac/lib  -lsacio -lsac -lm -lcufft 
 OBJS         = crsmex.cpp.o main.cu.o
 TARGET       = exec
-LINKLINE     = $(LINK) -o $(TARGET) $(OBJS) $(LIB_SAC)
+LINKLINE     = $(LINK) -O2 -o $(TARGET) $(OBJS) $(LIB_SAC)
 
 .SUFFIXES: .c .cpp .cu .o
 
