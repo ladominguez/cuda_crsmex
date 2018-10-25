@@ -185,7 +185,7 @@ int main(int argc, char **argv)
            (char *)SAC_HIGHPASS, 
            configstruct.low, configstruct.high, 
            del, configstruct.passes);
-     /* END */
+      END */
      memcpy(&data[count*MAX_ARRAY], yarray, nlen*sizeof(float));
      count++;
   }

@@ -36,15 +36,23 @@ function [dsamp,maxc,xcor] = xcorrshift(s1,s2,win,only_positive)
 
 n1=length(s1);
 n2=length(s2);
-if n1>n2, error('Reference signal S1 cannot be longer than target S2'), end
+if n1>n2, 
+    error('Reference signal S1 cannot be longer than target S2'), 
+end
+
 nx = n2-n1+1; % length of non-spurious part of xcor (no wraparound) 
-if nargin<3, win=[]; end
+if nargin<3, 
+    win=[]; 
+end
+
 if isempty(win)
   win=[1:nx]; 
 else
   win=[max(1,win(1)):min(nx,win(end))];
 end
-if nargin<4, only_positive=0; end
+if nargin<4, 
+    only_positive=0; 
+end
 
 % cross-correlation
 nfft = 2^nextpow2(n2+n1);
