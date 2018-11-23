@@ -1,0 +1,363 @@
+.
+├── benchmark
+│   ├── benchmark.dat
+│   ├── CAIG.HHZ..4-16Hz_data
+│   │   ├── CAIG.IG.HHZ..D.2011.006.064838.921.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.010.084532.922.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.013.002347.923.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.014.075342.924.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.018.183005.925.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.030.193718.926.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.038.122547.927.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.041.095736.928.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.041.144130.929.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.044.035757.930.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.045.074302.931.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.045.081908.932.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.045.082651.933.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.046.061323.934.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.052.004628.935.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.055.000305.936.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.055.050546.937.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.060.055820.938.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.060.104140.939.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.063.212426.940.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.074.062049.941.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.075.102250.942.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.076.094935.943.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.080.010335.944.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.082.061510.945.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.085.040344.946.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.092.095231.947.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.108.025656.948.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.108.165813.949.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.110.201730.950.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.114.230053.951.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.116.113707.952.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.116.125446.953.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.118.124547.954.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.124.051809.955.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.126.081807.956.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.127.174517.957.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.129.002120.958.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.133.014516.959.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.134.115811.960.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.136.083524.961.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.136.113030.962.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.136.233052.963.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.142.162646.964.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.143.161458.965.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.149.163025.966.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.150.161953.967.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.152.223757.968.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.153.105633.969.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.156.124237.970.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.156.175512.971.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.156.225512.972.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.157.211547.973.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.158.232648.974.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.170.054810.975.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.173.130532.976.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.174.121005.977.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.176.021810.978.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.184.150823.979.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.184.194444.980.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.186.182022.981.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.187.024320.982.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.187.080059.983.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.188.232905.984.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.189.120738.985.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.194.140814.986.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.196.204821.987.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.201.143221.988.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.207.201743.990.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.210.073416.991.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.210.142404.992.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.216.153046.993.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.217.181303.994.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.217.202538.995.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.221.132631.996.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.221.210837.997.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.223.165454.998.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.224.001941.999.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.224.051603.1000.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.225.010851.1001.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.226.033919.1002.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.228.231330.1003.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.232.041304.1006.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.236.183034.1007.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.237.205044.1008.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.238.203641.1009.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.240.201519.1010.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.241.075023.1011.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.241.173706.1012.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.241.202751.1013.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.244.113618.1014.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.252.134604.1015.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.255.154044.1016.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.258.201109.1017.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.260.012832.1018.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.260.145125.1019.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.260.150150.1020.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.265.025703.1021.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.266.024055.1022.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.266.025918.1023.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.266.030319.1024.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.266.034354.1025.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.266.034446.1026.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.268.040936.1027.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.268.195714.1028.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.269.040220.1029.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.269.080112.1030.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.269.101453.1031.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.269.152903.1032.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.270.153824.1033.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.271.081634.1034.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.271.082614.1035.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.272.095454.1036.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.273.031147.1037.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.274.153246.1038.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.274.210123.1039.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.274.223928.1040.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.275.065005.1041.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.275.235433.1042.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.279.111200.1043.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.281.074408.1044.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.281.110232.1045.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.281.213236.1046.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.283.020543.1047.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.283.234130.1048.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.291.021023.1049.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.293.033105.1050.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.293.035431.1051.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.295.090944.1052.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.296.001830.1053.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.306.070328.1055.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.306.232606.1056.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.308.024642.1057.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.308.143346.1058.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.309.073110.1059.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.309.120408.1060.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.310.050356.1061.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.311.173730.1062.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.317.144723.1063.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.319.110707.1064.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.321.102834.1065.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.323.092251.1066.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.323.092406.1067.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.324.141502.1068.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.325.090236.1069.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.326.225601.1070.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.326.231513.1071.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.326.234139.1072.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.326.235432.1073.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.327.015224.1074.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.328.000352.1075.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.329.120552.1076.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.329.153314.1077.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.332.134230.1078.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.347.231734.1079.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.352.104133.1080.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.353.213051.1081.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.354.163851.1082.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.358.133712.1083.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.361.120036.1084.sac
+│   │   ├── CAIG.IG.HHZ..D.2011.364.084848.1085.sac
+│   │   ├── CAIG.IG.HHZ..D.2012.001.230857.1086.sac
+│   │   ├── CAIG.IG.HHZ..D.2012.015.105158.1087.sac
+│   │   ├── CAIG.IG.HHZ..D.2012.017.123902.1088.sac
+│   │   ├── CAIG.IG.HHZ..D.2012.018.163859.1089.sac
+│   │   ├── CAIG.IG.HHZ..D.2012.020.190531.1090.sac
+│   │   ├── CAIG.IG.HHZ..D.2012.024.100645.1091.sac
+│   │   ├── CAIG.IG.HHZ..D.2012.024.105239.1092.sac
+│   │   ├── CAIG.IG.HHZ..D.2012.025.071817.1093.sac
+│   │   ├── CAIG.IG.HHZ..D.2012.030.181453.1094.sac
+│   │   ├── CAIG.IG.HHZ..D.2012.031.215031.1095.sac
+│   │   ├── CAIG.IG.HHZ..D.2012.034.232928.1096.sac
+│   │   ├── CAIG.IG.HHZ..D.2012.035.140853.1097.sac
+│   │   ├── CAIG.IG.HHZ..D.2012.050.082016.1098.sac
+│   │   ├── CAIG.IG.HHZ..D.2012.053.153452.1099.sac
+│   │   ├── CAIG.IG.HHZ..D.2012.054.063616.1100.sac
+│   │   ├── CAIG.IG.HHZ..D.2012.058.133706.1101.sac
+│   │   ├── CAIG.IG.HHZ..D.2012.058.231539.1102.sac
+│   │   └── CAIG.IG.HHZ..D.2012.060.063426.1103.sac
+│   ├── correlate_implementation.py
+│   ├── simple_test.py
+│   └── test_results
+│       ├── CRS_CAIG.HHZ..4-16Hz_data_2018OCT26.BSL
+│       ├── CRS_CAIG.HHZ..4-16Hz_data_2018OCT26.DAT
+│       ├── CRS_CAIG.HHZ..4-16Hz_data_2018OCT26.LOG
+│       └── xc.out
+├── bugs
+│   ├── check_coherency.py
+│   ├── coherence_matplotlib.png
+│   ├── coherence.png
+│   ├── PNIG.IG.BHZ..D.2002.065.022216.03339900.sac
+│   ├── PNIG.IG.BHZ..D.2010.192.063930.04777200.sac
+│   ├── PNIG.IG.BHZ..D.2010.229.065400.04805400.sac
+│   ├── S1.npy
+│   ├── S1.txt
+│   ├── S2.npy
+│   ├── S2.txt
+│   ├── Signal1.png
+│   └── Signal2.png
+├── canyon.py
+├── check_data_in_memory.m
+├── check_fft.m
+├── config.conf
+├── crsmex.cpp
+├── crsmex.cpp.o
+├── crsmex.h
+├── data.dat
+├── exec
+├── fft_examples
+│   ├── a.out
+│   ├── fft_batched
+│   ├── fft_batched.cu
+│   ├── fft.cu
+│   ├── Makefile
+│   ├── ppt
+│   │   ├── Class10.pdf
+│   │   ├── Class11.pdf
+│   │   ├── Class12.pdf
+│   │   ├── Class13.pdf
+│   │   ├── Class14.pdf
+│   │   ├── Class15.pdf
+│   │   ├── Class16.pdf
+│   │   ├── Class17.pdf
+│   │   ├── Class18.pdf
+│   │   ├── Class19.pdf
+│   │   ├── Class1.pdf
+│   │   ├── Class20.pdf
+│   │   ├── Class21.pdf
+│   │   ├── Class2.pdf
+│   │   ├── Class3.pdf
+│   │   ├── Class4.pdf
+│   │   ├── Class5.pdf
+│   │   ├── Class6.pdf
+│   │   ├── Class7.pdf
+│   │   ├── Class8.pdf
+│   │   └── Class9.pdf
+│   └── test.c
+├── filenames1.dat
+├── filenames2.dat
+├── filenames.dat
+├── Gerardo
+│   ├── Array0.dat
+│   ├── Array1.dat
+│   ├── Array2.dat
+│   ├── Array3.dat
+│   ├── Array4.dat
+│   ├── Array5.dat
+│   ├── Array6.dat
+│   ├── Array7.dat
+│   ├── Array8.dat
+│   └── Array9.dat
+├── graphics
+├── graphics_fft_0.eps
+├── graphics_fft_1.eps
+├── graphics_fft_2.eps
+├── graphics_fft_3.eps
+├── graphics_fft_4.eps
+├── graphics_fft_5.eps
+├── graphics_fft_6.eps
+├── graphics_fft_7.eps
+├── graphics_fft_8.eps
+├── graphics_fft_9.eps
+├── include
+│   ├── sacf.h
+│   ├── sac.h
+│   └── sacio.h
+├── libsac.a
+├── main.c.o
+├── main.cu
+├── main.cu.o
+├── Makefile
+├── Notes
+│   ├── Compiling CUDA code along with other C.pdf
+│   ├── config_file.docx
+│   ├── CUDA_compilation_with_C.pdf
+│   └── Lecture83.pdf
+├── output
+├── output0.dat
+├── output1.dat
+├── output2.dat
+├── output3.dat
+├── output4.dat
+├── output5.dat
+├── output6.dat
+├── output7.dat
+├── output8.dat
+├── output9.dat
+├── parse_config.c.o
+├── parse_config.cpp.o
+├── prueba.py
+├── README
+├── sac.a
+├── sac_load.h
+├── storage
+│   ├── main.c
+│   ├── main.cpp
+│   └── simple_main.cpp
+├── test
+│   ├── config.conf
+│   ├── crsmex.c
+│   ├── crsmex.cpp
+│   ├── crsmex.cpp.o
+│   ├── crsmex.h
+│   ├── crsmex.o
+│   ├── Makefile
+│   ├── parse_config.cpp
+│   ├── parse_config.o
+│   └── parser
+├── test_correlation
+│   ├── CAIG.IG.HHZ..D.2011.010.084532.922.sac
+│   ├── CAIG.IG.HHZ..D.2011.118.124547.954.sac
+│   ├── filenames.dat
+│   ├── Makefile
+│   ├── output_conj.dat
+│   ├── output.dat
+│   ├── power.dat
+│   ├── test_correlation
+│   ├── test_correlation.cu
+│   └── tmp
+├── test.cu
+├── test_data
+│   ├── 20011105100000.IG.PLIG.BHZ.sac
+│   ├── 20011105104504.IG.PLIG.BHZ.sac
+│   ├── 20040403234914.IG.PLIG.BHZ.sac
+│   ├── 20051008035040.TO.ACAP.HHZ.sac
+│   ├── 20080925043418.IG.PLIG.BHZ.sac
+│   ├── 20110106064638.IG.CAIG.HHZ.sac
+│   ├── 20110110084332.IG.CAIG.HHZ.sac
+│   ├── 20110113002147.IG.CAIG.HHZ.sac
+│   ├── 20110114075142.IG.CAIG.HHZ.sac
+│   ├── 20110118182805.IG.CAIG.HHZ.sac
+│   ├── 20110130193518.IG.CAIG.HHZ.sac
+│   ├── 20110207122347.IG.CAIG.HHZ.sac
+│   ├── 20110210095536.IG.CAIG.HHZ.sac
+│   ├── 20110210143930.IG.CAIG.HHZ.sac
+│   ├── 20110213035557.IG.CAIG.HHZ.sac
+│   ├── distkm.m
+│   ├── filter_sac.m
+│   ├── fontsize.m
+│   ├── FourierShift.m
+│   ├── get_correlation_coefficient.m
+│   ├── hp.20011105100000.IG.PLIG.BHZ.sac
+│   ├── julian2mmdd.m
+│   ├── rsac.m
+│   ├── setwin.m
+│   ├── setw.m
+│   ├── signal1.dat
+│   ├── test_correlation.m
+│   ├── test_xcorr.m
+│   └── xcorrshift.m
+├── tmp
+├── unit_test
+│   ├── 20011105104504.IG.PLIG.BHZ.sac
+│   ├── 20040403234914.IG.PLIG.BHZ.sac
+│   ├── 20080925043418.IG.PLIG.BHZ.sac
+│   └── unit_test.dat
+└── xcorrshift.m
+
+16 directories, 344 files
