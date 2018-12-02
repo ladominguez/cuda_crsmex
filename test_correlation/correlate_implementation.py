@@ -38,7 +38,6 @@ npts       = len(B[0].data)
 fft_B      = np.fft.fft(B[0].data)
 fft_B_conj = np.conj(fft_B)
 npts       = 1.0
-print('npts = ', npts)
 
 # Scipy function
 corr_B      = scp.correlate(B[0].data, B[0].data)/ npts
@@ -54,18 +53,25 @@ Power2           = corr_B_CUDA_max
 corr_AB      = scp.correlate(A[0].data, B[0].data)/ (npts*np.sqrt(Power1*Power2))
 corr_AB_max  = corr_AB.max()
 # CUDA-type implementation
-corr_AB_CUDA = np.fft.ifft(fft_A*fft_B_conj)/ (npts*np.sqrt(Power1*Power2))
+corr_AB_AUX      = np.fft.ifft(fft_A*fft_B_conj)
+corr_AB_CUDA     = np.fft.ifft(fft_A*fft_B_conj)/ (npts*np.sqrt(Power1*Power2))
 corr_AB_CUDA_max = corr_AB_CUDA.max().real
 
+print('npts         = ', npts)
 print('Power A      = ', Power1)
-print('ind(Power_A) = ',ind_PowerA)
-print('Power B = ', Power2)
-print('ind(Power_B) = ',ind_PowerB)
-
-print('CC = ', corr_AB_CUDA_max)
+print('ind(Power_A) = ', ind_PowerA)
+print('Power B      = ', Power2)
+print('ind(Power_B) = ', ind_PowerB)
+print('numerador    = ', corr_AB_AUX.max().real)
+print('CC           = ', corr_AB_CUDA_max)
 
 #plt.plot(corr_A_CUDA.real)
 #plt.show()
 np.savetxt('powerA_py.dat', corr_A_CUDA.real)
 np.savetxt('powerB_py.dat', corr_B_CUDA.real)
+np.savetxt('corrAB_py_real.dat', corr_AB_CUDA.real)
+np.savetxt('corrAB_py_imag.dat', corr_AB_CUDA.imag)
+np.savetxt('corr_AB_AUX_real.dat', corr_AB_AUX.real)
+np.savetxt('corr_AB_AUX_imag.dat', corr_AB_AUX.imag)
+
 #np.savetxt('fft_A.dat',abs(fft_A))

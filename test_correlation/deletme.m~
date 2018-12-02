@@ -1,0 +1,10 @@
+clear all
+close all
+
+corr_real = load('corr_AB_AUX_real.dat');
+corr_imag      = load('corr_AB_AUX_imag.dat')
+
+subplot(2,1,1)
+plot(corr_real)
+subplot(2,1,2)
+
